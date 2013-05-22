@@ -28,7 +28,7 @@ class Family(family.Family):
         uses a different value.
 
         """
-        return '/wiki'
+        return '/'
 
     # Which version of MediaWiki is used? REQUIRED
     def version(self, code):
