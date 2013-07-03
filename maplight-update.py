@@ -15,7 +15,7 @@ The following parameters are supported:
 All other parameters will be regarded as part of the title of a single page,
 and the bot will only work on that single page.
 """
-#
+# (C) James Michael DuPont, 2013
 # (C) Pywikipedia bot team, 2006-2010
 #
 # Distributed under the terms of the MIT license.
@@ -53,22 +53,7 @@ class BasicBot:
     # Edit summary message that should be used.
     # NOTE: Put a good description here, and add translations, if possible!
     msg = {
-        'ar': u'روبوت: تغيير ...',
-        'cs': u'Robot změnil ...',
-        'de': u'Bot: Ändere ...',
-        'en': u'Robot: Changing ...',
-        'fa': u'ربات: تغییر ...',
-        'fr': u'Robot: Changé ...',
-        'ja':u'ロボットによる：編集',
-        'ksh': u'Bot: Änderung ...',
-        'nds': u'Bot: Ännern ...',
-        'nl': u'Bot: wijziging ...',
-        'pl': u'Bot: zmienia ...',
-        'pt': u'Bot: alterando...',
-        'ru': u'Бот: изменил ...',
-        'sv': u'Bot: Ändrar ...',
-        'uk': u'Бот: змінив ...',
-        'zh': u'機器人：編輯.....',
+        'en': u'Rootstriker bot: Adding in cong links',
     }
 
     def __init__(self, generator, dry):
@@ -118,7 +103,20 @@ class BasicBot:
 #            print maplightid
             if maplightid in maplight:
                 data=maplight[maplightid]
-                text = 'Test ' + str(data) + text
+
+                ids = "{{CongLinks"
+                for k in  data['id'].keys() :
+                    if (k == 'fec') :
+                        fecs = "{{fecids"
+                        for fec in data['id'][k] :
+                            fecs = fecs +  "|" + str(fec) 
+                        fecs = fecs + "}}"
+                        ids = ids +  "|" + str(k) +  "=" + str(fecs)
+                    else:
+                        ids = ids +  "|" + str(k) +  "=" + str(data['id'][k])
+                ids = ids +  "}}"
+                text =  text + str(ids)
+
             else:
                 print maplightid
                 print maplight.keys()
