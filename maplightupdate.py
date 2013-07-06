@@ -95,16 +95,23 @@ class BasicBot:
 
 #{{maplight candidate||all_count=567|all_rank=211|chamber_count=508|chamber_rank=177|contrib_end=May 19, 2013|contrib_start=Jan 1, 2013|contrib_total=135310|district_holding=8|district_running=8|first_name=Larry|full_name=Larry D Bucshon|gender=M|ico=I|last_name=Bucshon|office_holding=House|office_running=House|party=Republican|person_id=5705|state=IN|status=Not Yet A Statutory Candidate|status_date=|url_photo=http://images.maplight.org/persons/5705.jpg}}
 #        print text 
+
+        regex = re.compile(r'.*CongLinks.*', re.MULTILINE)
+        matches = [m.groups(0) for m in regex.finditer(text)]
+        if matches:
+            pywikibot.output(u'Page %s already contains CongLinks.' % page.title(asLink=True))
+            return 
+
         regex = re.compile(r'.*\|person_id\=(\d+)\|.*', re.MULTILINE)
         matches = [m.groups(0) for m in regex.finditer(text)]
-        print matches
+    
         if (matches ):
             maplightid=str(matches[0][0])
 #            print maplightid
             if maplightid in maplight:
                 data=maplight[maplightid]
 
-                ids = "{{CongLinks"
+                ids = "\n{{CongLinks"
                 for k in  data['id'].keys() :
                     if (k == 'fec') :
                         fecs = "{{fecids"
@@ -122,9 +129,11 @@ class BasicBot:
                 print maplight.keys()
         else:
             print "no person id found"
-
-        if not self.save(text, page, self.summary):
-            pywikibot.output(u'Page %s not saved.' % page.title(asLink=True))
+        try:
+            if not self.save(text, page, self.summary):
+                pywikibot.output(u'Page %s not saved.' % page.title(asLink=True))
+        except :
+            pass
 
     def load(self, page):
         """
@@ -153,28 +162,23 @@ class BasicBot:
             # show what was changed
             pywikibot.showDiff(page.get(), text)
             pywikibot.output(u'Comment: %s' %comment)
-            if not self.dry:
-                choice = pywikibot.inputChoice(
-                    u'Do you want to accept these changes?',
-                    ['Yes', 'No'], ['y', 'N'], 'N')
-                if choice == 'y':
-                    try:
-                        # Save the page
-                        page.put(text, comment=comment,
-                                 minorEdit=minorEdit, botflag=botflag)
-                    except pywikibot.LockedPage:
-                        pywikibot.output(u"Page %s is locked; skipping."
-                                         % page.title(asLink=True))
-                    except pywikibot.EditConflict:
-                        pywikibot.output(
-                            u'Skipping %s because of edit conflict'
-                            % (page.title()))
-                    except pywikibot.SpamfilterError, error:
-                        pywikibot.output(
-u'Cannot change %s because of spam blacklist entry %s'
-                            % (page.title(), error.url))
-                    else:
-                        return True
+            try:
+                # Save the page
+                page.put(text, comment=comment,
+                    minorEdit=minorEdit, botflag=botflag)
+                return True
+            except pywikibot.LockedPage:
+                pywikibot.output(u"Page %s is locked; skipping."
+                                 % page.title(asLink=True))
+            except pywikibot.EditConflict:
+                pywikibot.output(
+                    u'Skipping %s because of edit conflict'
+                    % (page.title()))
+            except pywikibot.SpamfilterError, error:
+                pywikibot.output(
+                    u'Cannot change %s because of spam blacklist entry %s'
+                    % (page.title(), error.url))
+            
         return False
 
 def main():
