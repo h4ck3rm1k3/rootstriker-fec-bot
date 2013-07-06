@@ -22,7 +22,7 @@ and the bot will only work on that single page.
 #
 __version__ = '$Id: basic.py 8807 2010-12-27 21:34:11Z purodha $'
 #
-
+import unicodedata
 import wikipedia as pywikibot
 import pagegenerators
 
@@ -106,6 +106,7 @@ class BasicBot:
         matches = [m.groups(0) for m in regex.finditer(text)]
     
         if (matches ):
+            pywikibot.output(u'Page %s being edited.' % page.title(asLink=True))
             maplightid=str(matches[0][0])
 #            print maplightid
             if maplightid in maplight:
@@ -120,7 +121,13 @@ class BasicBot:
                         fecs = fecs + "}}"
                         ids = ids +  "|" + str(k) +  "=" + str(fecs)
                     else:
-                        ids = ids +  "|" + str(k) +  "=" + str(data['id'][k])
+#                        try :
+                        val =unicode(str(data['id'][k]),'utf-8')
+                        ids = ids +  "|" + str(k) +  "=" + val
+
+#                            )
+ #                       except :
+ #                           print "canot add key", k, data['id'][k]
                 ids = ids +  "}}"
                 text =  text + str(ids)
 
