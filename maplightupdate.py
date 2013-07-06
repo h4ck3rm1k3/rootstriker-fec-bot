@@ -25,7 +25,7 @@ __version__ = '$Id: basic.py 8807 2010-12-27 21:34:11Z purodha $'
 import unicodedata
 import wikipedia as pywikibot
 import pagegenerators
-
+import types
 import sys
 #sys.path.append("../maplight-convert/") 
 sys.path.append("../") 
@@ -121,15 +121,20 @@ class BasicBot:
                         fecs = fecs + "}}"
                         ids = ids +  "|" + str(k) +  "=" + str(fecs)
                     else:
-#                        try :
-                        val =unicode(str(data['id'][k]),'utf-8')
+                        val =data['id'][k]
+                        if type(val) == types.IntType :
+                            val = str(val)
+                            
+#                        print type(data['id'][k])
+ #                       print data['id'][k]
+  #                      val =unicode(data['id'][k],'utf-8')
                         ids = ids +  "|" + str(k) +  "=" + val
 
 #                            )
  #                       except :
  #                           print "canot add key", k, data['id'][k]
                 ids = ids +  "}}"
-                text =  text + str(ids)
+                text =  text + ids
 
             else:
                 print maplightid
