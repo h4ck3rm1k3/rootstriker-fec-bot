@@ -141,7 +141,7 @@ from BeautifulSoup import BeautifulSoup, BeautifulStoneSoup, SoupStrainer
 import weakref
 # Splitting the bot into library parts
 from pywikibot import *
-
+import string
 # Set the locale to system default. This will ensure correct string
 # handling for non-latin characters on Python 2.3.x. For Python 2.4.x it's no
 # longer needed.
@@ -7823,6 +7823,9 @@ Global arguments available for all bots:
 '''
     output(globalHelp, toStdout = True)
     try:
+        if ((moduleName[0]==".") and (moduleName[1]=="/")) :
+            moduleName = moduleName.lstrip("./")
+            
         exec('import %s as module' % moduleName)
         helpText = module.__doc__.decode('utf-8')
         if hasattr(module, 'docuReplacements'):
